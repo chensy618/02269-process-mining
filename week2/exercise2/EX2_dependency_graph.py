@@ -38,22 +38,22 @@ def dependency_graph_inline(log) :
             # increment the count of the dependency
             dg[ai][aj] += 1
     # test the output of the dictionary
-    print("output of the dg",dg)
+    # print("output of the dg",dg)
     return dg
     
 def read_from_file(path):
     log = {}
     # construct the file path
     path = os.path.join(os.path.dirname(__file__), path)
-    print("path",path)
+    # print("path",path)
     with open(path, 'r') as file:
-        print("filename",file)
+        # print("filename",file)
         # read the xml file
         xml = file.read()
-        print("xml",xml)
+        # print("xml",xml)
         # get the cases from the xml file
         cases = xml.split('<trace>')
-        print("cases",cases)
+        # print("cases",cases)
         # loop through the cases
         for case in cases[1:]:
             # get the case id
@@ -83,6 +83,30 @@ def read_from_file(path):
                     # store the event in the log
                     log[case_id].append({"concept:name": task, "org:resource": user, "time:timestamp": date, "cost": cost})
     return log
+
+def dependency_graph_file(log):
+    df = {}
+    # loop through the cases in the log
+    for key in log.keys():
+        # loop through the tasks in the case
+        for i in range(len(log[key])-1):
+            # get the task name of the current case
+            ai = log[key][i]["concept:name"]
+            # print(ai)
+            # get the next task name of the current case
+            aj = log[key][i+1]["concept:name"]
+            # print(aj)
+            if ai not in df:
+                df[ai] = {}
+            if aj not in df[ai]:
+                # set the dependency count to 0
+                df[ai][aj] = 0
+            # increment the count of the dependency
+            df[ai][aj] += 1
+    # test the output of the dictionary
+    # print("output of the dg",dg)
+    return df
+
 f = """
 Task_A;case_1;user_1;2019-09-09 17:36:47
 Task_B;case_1;user_3;2019-09-11 09:11:13
@@ -106,7 +130,7 @@ Task_B;case_3;user_4;2019-09-29 10:56:14
 Task_C;case_3;user_1;2019-09-30 15:41:22"""
 
 log = log_as_dictionary(f)
-print(log)
+# print(log)
 dg = dependency_graph_inline(log)
 
 for ai in sorted(dg.keys()):
